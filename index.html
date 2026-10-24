@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Final Address</title>
+  <!-- GANTI dengan link audio Google Drive Anda. File Drive harus diatur: General access / Anyone with the link. -->
+  <script>const AUDIO_URL = './audio/background.mp3';</script>
+  <style>
+    :root {
+      --bg: #0b0b0d; --panel: #131316; --panel2: #19191d; --line: #303035;
+      --text: #e9e4df; --muted: #a6a0a0; --accent: #c8a6a0; --accent2: #8e686b;
+      --gold: #c5b18a; --serif: Georgia, "Times New Roman", serif;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; color: var(--text); font-family: var(--sans); line-height: 1.7;
+      background:
+        radial-gradient(ellipse at 78% 0%, rgba(105,65,69,.18), transparent 38rem),
+        radial-gradient(ellipse at 5% 50%, rgba(96,81,65,.08), transparent 32rem), var(--bg);
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .shell { max-width: 1180px; margin: 0 auto; padding: 0 24px 130px; }
+    .hero { min-height: 390px; display: flex; align-items: end; padding: 76px 0 46px; position: relative; overflow: hidden; }
+    .hero::after { content: "✿"; position: absolute; right: 4%; top: 18px; font-size: clamp(150px, 25vw, 310px); color: rgba(196,158,153,.055); transform: rotate(-24deg); pointer-events:none; }
+    .eyebrow { color: var(--gold); text-transform: uppercase; letter-spacing: .23em; font-size: .72rem; font-weight: 650; }
+    h1 { font-family: var(--serif); font-size: clamp(2.8rem, 7vw, 5.8rem); line-height: .98; font-weight: 400; letter-spacing: -.045em; max-width: 780px; margin: 22px 0; }
+    .hero p { color: var(--muted); max-width: 580px; margin: 0; font-size: 1rem; }
+    .rule { height: 1px; background: linear-gradient(90deg, var(--accent2), transparent); margin: 10px 0 34px; }
+    .layout { display: grid; grid-template-columns: 300px minmax(0,1fr); gap: 42px; align-items: start; }
+    aside { position: sticky; top: 22px; }
+    .toc-head { display:flex; align-items:center; justify-content:space-between; margin-bottom: 14px; }
+    .toc-head h2 { margin:0; font-size:.78rem; letter-spacing:.17em; text-transform:uppercase; color:var(--muted); }
+    .count { font-size:.75rem; color:var(--gold); }
+    .toc { display:grid; gap:7px; }
+    .toc button { text-align:left; color:var(--muted); border:1px solid transparent; background:transparent; border-radius:10px; padding:12px 13px; display:grid; grid-template-columns:34px 1fr; gap:8px; transition:.2s; }
+    .toc button:hover { background:rgba(255,255,255,.035); color:var(--text); }
+    .toc button.active { background:linear-gradient(110deg, rgba(142,104,107,.2), rgba(255,255,255,.02)); border-color:rgba(200,166,160,.28); color:var(--text); }
+    .toc-num { color:var(--accent); font-size:.77rem; padding-top:2px; }
+    .toc-title { font-family:var(--serif); font-size:1.04rem; line-height:1.25; }
+    .toc-sub { grid-column:2; font-size:.74rem; line-height:1.4; color:#898383; margin-top:-3px; }
+    .reader { background:linear-gradient(145deg, rgba(24,24,28,.96), rgba(16,16,19,.96)); border:1px solid var(--line); border-radius:18px; min-height:560px; padding:clamp(24px,5vw,56px); box-shadow:0 22px 80px rgba(0,0,0,.2); }
+    .reader-top { display:flex; align-items:center; justify-content:space-between; gap:15px; color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.13em; }
+    .progress { height:2px; background:#333136; margin:18px 0 34px; overflow:hidden; }
+    .progress span { display:block; height:100%; background:var(--accent); transition:width .25s; }
+    .chapter-kicker { color:var(--gold); font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; }
+    h2#chapterTitle { font-family:var(--serif); font-size:clamp(2rem,4vw,3.3rem); font-weight:400; line-height:1.08; letter-spacing:-.025em; margin:13px 0 10px; }
+    .chapter-subtitle { color:var(--muted); font-size:.92rem; margin:0 0 34px; }
+    .speech p { font-family:var(--serif); font-size:clamp(1.12rem,1.7vw,1.32rem); line-height:1.95; color:#ded8d3; margin:0 0 1.5em; white-space:pre-wrap; }
+    .speech p:first-child { color:#f1e9e3; }
+    .nav-buttons { display:flex; justify-content:space-between; gap:12px; border-top:1px solid var(--line); padding-top:24px; margin-top:42px; }
+    .btn { border:1px solid #454047; border-radius:999px; padding:10px 17px; color:var(--text); background:#1a191d; transition:.2s; }
+    .btn:hover { border-color:var(--accent); background:#242025; }
+    .btn.primary { background:var(--accent); color:#171113; border-color:var(--accent); font-weight:650; }
+    .btn.primary:hover { background:#d8b9b2; }
+    .btn:disabled { opacity:.35; cursor:not-allowed; }
+    .focus-note { color:#777176; font-size:.75rem; margin-top:20px; }
+    .music-dock { position:fixed; z-index:10; bottom:0; left:0; right:0; background:rgba(13,13,16,.94); backdrop-filter:blur(18px); border-top:1px solid #302b30; }
+    .music-inner { max-width:1180px; margin:auto; padding:13px 24px; display:flex; align-items:center; gap:15px; }
+    .music-icon { width:42px; height:42px; flex:0 0 42px; border:1px solid #59484b; border-radius:50%; display:grid; place-items:center; color:var(--accent); }
+    .music-meta { min-width:140px; flex:1; }
+    .music-meta strong { display:block; font-size:.83rem; font-weight:600; }
+    .music-meta span { display:block; color:var(--muted); font-size:.72rem; }
+    .music-controls { display:flex; align-items:center; gap:12px; }
+    .icon-btn {
+      min-width:132px; min-height:44px; padding:0 17px; border-radius:10px;
+      border:1px solid var(--accent); background:rgba(142,104,107,.22);
+      color:#f0deda; font-weight:700; letter-spacing:.02em;
+      display:inline-flex; align-items:center; justify-content:center; gap:9px;
+      box-shadow:0 3px 14px rgba(0,0,0,.22); transition:background .2s, transform .2s, box-shadow .2s;
+    }
+    .icon-btn:hover { background:rgba(142,104,107,.38); box-shadow:0 0 0 3px rgba(200,166,160,.10); }
+    .icon-btn:active { transform:translateY(1px); }
+    .icon-btn:focus-visible, .focus-toggle:focus-visible, .btn:focus-visible, .toc button:focus-visible {
+      outline:3px solid #e4c8c3; outline-offset:3px;
+    }
+    .status { font-size:.75rem; color:var(--muted); max-width:245px; }
+    .notice { border:1px solid #514448; background:rgba(142,104,107,.1); color:#c9b7b4; padding:12px 14px; border-radius:10px; font-size:.8rem; margin-top:16px; }
+    .welcome-screen { position:fixed; inset:0; z-index:30; display:grid; place-items:center; padding:24px; background:radial-gradient(ellipse at 50% 20%, rgba(105,65,69,.3), transparent 34rem), rgba(8,8,10,.98); transition:opacity .5s ease, visibility .5s ease; }
+    .welcome-screen.dismissed { opacity:0; visibility:hidden; pointer-events:none; }
+    .welcome-card { width:min(720px,100%); text-align:center; padding:clamp(28px,6vw,64px); border:1px solid rgba(200,166,160,.28); border-radius:18px; background:linear-gradient(145deg,rgba(24,24,28,.95),rgba(13,13,16,.98)); box-shadow:0 30px 120px rgba(0,0,0,.5); }
+    .welcome-flower { color:rgba(200,166,160,.48); font-size:clamp(3rem,10vw,6rem); line-height:1; }
+    .welcome-card h2 { font:400 clamp(2.6rem,7vw,5rem)/1 Georgia,serif; letter-spacing:-.04em; margin:20px 0; }
+    .welcome-card p { color:var(--muted); max-width:480px; margin:0 auto 28px; }
+    .start-reading { min-height:50px; border:1px solid var(--accent); border-radius:10px; padding:12px 25px; color:#171113; background:var(--accent); font-weight:750; box-shadow:0 8px 28px rgba(142,104,107,.22); }
+    .start-reading:hover { background:#d8b9b2; }
+    .welcome-hint { display:block; margin-top:14px; color:#8e8588; font-size:.76rem; }
+    .hidden { display:none !important; }
+    .reader.focus-mode { min-height:75vh; }
+    .focus-toggle {
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      color:#f0deda; background:rgba(142,104,107,.24);
+      border:1px solid rgba(200,166,160,.72); border-radius:9px;
+      padding:10px 15px; min-height:42px; white-space:nowrap;
+      text-decoration:none; font-size:.8rem; font-weight:700; letter-spacing:.01em;
+      text-transform:none; cursor:pointer; transition:background .2s, border-color .2s, box-shadow .2s, transform .2s;
+      box-shadow:0 3px 12px rgba(0,0,0,.18);
+    }
+    .focus-toggle::before { content:"⛶"; font-size:1rem; line-height:1; }
+    .focus-toggle:hover { background:rgba(142,104,107,.4); border-color:var(--accent); box-shadow:0 0 0 3px rgba(200,166,160,.10); }
+    .focus-toggle:active { transform:translateY(1px); }
+    .focus-toggle[aria-pressed="true"] { background:var(--accent); color:#171113; border-color:var(--accent); }
+    .focus-toggle[aria-pressed="true"]::before { content:"↙"; }
+    body.focus-active .shell { max-width:1440px; }
+    body.focus-active .layout { display:block; }
+    body.focus-active .reader {
+      max-width:1040px; margin:0 auto; padding:clamp(30px,5vw,76px);
+      border-color:rgba(200,166,160,.34); box-shadow:0 24px 100px rgba(0,0,0,.32);
+    }
+    body.focus-active .speech { max-width:760px; margin:0 auto; }
+    body.focus-active .reader-top, body.focus-active .progress, body.focus-active .chapter-kicker,
+    body.focus-active h2#chapterTitle, body.focus-active .chapter-subtitle,
+    body.focus-active .nav-buttons, body.focus-active .focus-note { max-width:760px; margin-left:auto; margin-right:auto; }
+    body.focus-active h2#chapterTitle { font-size:clamp(2.5rem,4.5vw,4rem); }
+    body.focus-active .speech p { font-size:clamp(1.22rem,1.55vw,1.45rem); line-height:2.05; margin-bottom:1.7em; }
+    body.focus-active .reader-top { align-items:center; }
+    footer { margin-top:42px; color:#6f696d; font-size:.74rem; text-align:center; }
+    @media (max-width: 820px) {
+      .layout { grid-template-columns:1fr; gap:22px; }
+      aside { position:static; }
+      .toc { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .toc button { grid-template-columns:27px 1fr; padding:10px; }
+      .toc-sub { display:none; }
+      .hero { min-height:320px; }
+      .music-inner { flex-wrap:wrap; gap:9px; padding:10px 16px; }
+      .music-meta { min-width:100px; }
+      .music-controls { gap:7px; }
+      .icon-btn { min-width:116px; min-height:42px; padding:0 12px; }
+      .status { display:none; }
+      .shell { padding:0 16px 150px; }
+      body.focus-active .reader { padding:26px 22px; }
+      body.focus-active .speech p { font-size:1.16rem; line-height:1.9; }
+    }
+    @media (max-width: 430px) {
+      .toc { grid-template-columns:1fr; }
+      .file-label { display:none; }
+      .music-icon { width:36px; height:36px; flex-basis:36px; }
+      .music-meta strong { font-size:.76rem; }
+      .music-meta span { font-size:.66rem; }
+      .music-controls { width:100%; }
+      .icon-btn { flex:1; }
+    }
+  </style>
+</head>
+<body>
+<div class="welcome-screen" id="welcomeScreen" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+  <div class="welcome-card">
+    <div class="welcome-flower" aria-hidden="true">✿</div>
+    <div class="eyebrow">Sebuah pidato perpisahan</div>
+    <h2 id="welcomeTitle">The Final Address</h2>
+    <p>Beberapa kata terakhir, sebelum semuanya menjadi kenangan.</p>
+    <button class="start-reading" id="startReading" type="button">▶ &nbsp; Mulai membaca</button>
+    <span class="welcome-hint">Musik instrumental akan dicoba mulai saat Anda menekan tombol ini.</span>
+  </div>
+</div>
+
+  <div class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">A farewell · A passing of the torch</div>
+        <h1>The Final<br>Address</h1>
+        <p>Sebuah pesan tentang tanggung jawab, akhir masa tugas, dan bunga-bunga yang akan melanjutkan perjalanan.</p>
+      </div>
+    </header>
+    <div class="rule"></div>
+    <main class="layout">
+      <aside id="sidebar">
+        <div class="toc-head">
+          <h2>Daftar Isi</h2>
+          <span class="count" id="tocCount">09 BAGIAN</span>
+        </div>
+        <nav class="toc" id="toc" aria-label="Daftar bagian pidato"></nav>
+        <div class="notice">Urutan bab mengikuti alur naskah asli. Pilih bagian mana pun untuk membacanya; gunakan tombol navigasi untuk mengikuti urutan yang disarankan.</div>
+      </aside>
+      <section class="reader" id="reader" aria-live="polite">
+        <div class="reader-top">
+          <span id="chapterCounter">BAGIAN 01 DARI 09</span>
+          <button class="focus-toggle" id="focusToggle" type="button">Mode fokus</button>
+        </div>
+        <div class="progress"><span id="progressBar" style="width:11.11%"></span></div>
+        <div class="chapter-kicker">The President's Message</div>
+        <h2 id="chapterTitle"></h2>
+        <p class="chapter-subtitle" id="chapterSubtitle"></p>
+        <article class="speech" id="speechText"></article>
+        <div class="nav-buttons">
+          <button class="btn" id="prevBtn" type="button">← Sebelumnya</button>
+          <button class="btn primary" id="nextBtn" type="button">Selanjutnya →</button>
+        </div>
+        <p class="focus-note">Bacalah dengan tenang. Musik bersifat opsional dan dapat dijeda kapan saja.</p>
+      </section>
+    </main>
+    <footer>THE FINAL ADDRESS · LABORATORIUM TEKNIK INDUSTRI DASAR</footer>
+  </div>
+
+  <div class="music-dock">
+    <div class="music-inner">
+      <div class="music-icon" aria-hidden="true">♫</div>
+      <div class="music-meta">
+        <strong>Melancholic Instrumental</strong>
+        <span id="musicLabel">Musik pengiring · loop aktif</span>
+      </div>
+      <audio id="bgAudio" loop preload="auto"></audio>
+      <div class="music-controls">
+        <button class="icon-btn" id="playBtn" type="button" aria-label="Putar musik" title="Putar musik"><span aria-hidden="true">▶</span><span id="playBtnText">Putar musik</span></button>
+        <span class="status" id="musicStatus">Mencoba memulai musik…</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="./chapters.js"></script>
+  <script>
+    const toc = document.getElementById('toc');
+    const reader = document.getElementById('reader');
+    const speechText = document.getElementById('speechText');
+    const bgAudio = document.getElementById('bgAudio');
+    let current = 0;
+    let objectUrl = null;
+
+    function renderToc() {
+      toc.innerHTML = '';
+      CHAPTERS.forEach((chapter, i) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = i === current ? 'active' : '';
+        button.setAttribute('aria-current', i === current ? 'step' : 'false');
+        const num = document.createElement('span');
+        num.className = 'toc-num';
+        num.textContent = String(i + 1).padStart(2, '0');
+        const title = document.createElement('span');
+        title.className = 'toc-title';
+        title.textContent = chapter.title;
+        const sub = document.createElement('span');
+        sub.className = 'toc-sub';
+        sub.textContent = chapter.subtitle;
+        button.append(num, title, sub);
+        button.addEventListener('click', () => showChapter(i, true));
+        toc.appendChild(button);
+      });
+    }
+
+    function showChapter(index, scrollToReader) {
+      current = Math.max(0, Math.min(CHAPTERS.length - 1, index));
+      const chapter = CHAPTERS[current];
+      document.getElementById('chapterCounter').textContent =
+        `BAGIAN ${String(current + 1).padStart(2, '0')} DARI ${String(CHAPTERS.length).padStart(2, '0')}`;
+      document.getElementById('chapterTitle').textContent = chapter.title;
+      document.getElementById('chapterSubtitle').textContent = chapter.subtitle;
+      document.getElementById('progressBar').style.width = `${((current + 1) / CHAPTERS.length) * 100}%`;
+      speechText.replaceChildren();
+      chapter.paragraphs.forEach(text => {
+        const p = document.createElement('p');
+        p.textContent = text;
+        speechText.appendChild(p);
+      });
+      document.getElementById('prevBtn').disabled = current === 0;
+      document.getElementById('nextBtn').textContent = current === CHAPTERS.length - 1 ? 'Kembali ke Awal ↺' : 'Selanjutnya →';
+      renderToc();
+      if (scrollToReader) reader.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => showChapter(current - 1, true));
+    document.getElementById('nextBtn').addEventListener('click', () => showChapter(current === CHAPTERS.length - 1 ? 0 : current + 1, true));
+    function directAudioUrl(input) {
+      if (!input || input === 'PASTE_GOOGLE_DRIVE_AUDIO_LINK_HERE') return '';
+      // Mendukung link berbagi Drive yang umum: /file/d/ID/view atau open?id=ID.
+      const fileMatch = input.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+      const queryMatch = input.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      const id = fileMatch ? fileMatch[1] : (queryMatch ? queryMatch[1] : null);
+      if (id && input.includes('drive.google.com')) return 'https://drive.google.com/uc?export=download&id=' + id;
+      return input;
+    }
+
+    function updatePlayButton() {
+      const playing = !bgAudio.paused;
+      document.getElementById('playBtn').innerHTML = playing
+        ? '<span aria-hidden="true">Ⅱ</span><span id="playBtnText">Jeda musik</span>'
+        : '<span aria-hidden="true">▶</span><span id="playBtnText">Putar musik</span>';
+      document.getElementById('playBtn').setAttribute('aria-label', playing ? 'Jeda musik' : 'Putar musik');
+      document.getElementById('playBtn').title = playing ? 'Jeda musik' : 'Putar musik';
+      if (playing) document.getElementById('musicStatus').textContent = 'Sedang diputar · loop aktif';
+    }
+
+    async function startMusic() {
+      const url = directAudioUrl(AUDIO_URL);
+      if (!url) {
+        document.getElementById('musicStatus').textContent = 'Link audio belum dipasang di Index.html';
+        updatePlayButton();
+        return;
+      }
+      if (!bgAudio.src) bgAudio.src = url;
+      try {
+        await bgAudio.play();
+        document.getElementById('musicStatus').textContent = 'Sedang diputar · loop aktif';
+      } catch (e) {
+        // Autoplay bersuara umumnya diblokir browser sampai ada interaksi pengguna.
+        document.getElementById('musicStatus').textContent = 'Autoplay diblokir browser — tekan Putar musik';
+      }
+      updatePlayButton();
+    }
+
+    document.getElementById('startReading').addEventListener('click', async () => {
+      // Mulai audio langsung dari interaksi pengguna, lalu tutup layar pembuka.
+      await startMusic();
+      document.getElementById('welcomeScreen').classList.add('dismissed');
+      document.getElementById('welcomeScreen').setAttribute('aria-hidden', 'true');
+    });
+
+    document.getElementById('playBtn').addEventListener('click', async () => {
+      if (bgAudio.paused) {
+        await startMusic();
+      } else {
+        bgAudio.pause();
+        document.getElementById('musicStatus').textContent = 'Musik dijeda';
+        updatePlayButton();
+      }
+    });
+
+    bgAudio.addEventListener('play', updatePlayButton);
+    bgAudio.addEventListener('pause', updatePlayButton);
+    bgAudio.addEventListener('error', () => {
+      document.getElementById('musicStatus').textContent = 'Audio gagal dimuat; pastikan audio/background.mp3 tersedia dan valid';
+    });
+    document.getElementById('focusToggle').setAttribute('aria-pressed', 'false');
+    document.getElementById('focusToggle').addEventListener('click', () => {
+      const focused = reader.classList.toggle('focus-mode');
+      document.getElementById('sidebar').classList.toggle('hidden', focused);
+      document.body.classList.toggle('focus-active', focused);
+      document.getElementById('focusToggle').textContent = focused ? 'Keluar dari fokus' : 'Mode fokus';
+      document.getElementById('focusToggle').setAttribute('aria-pressed', String(focused));
+    });
+
+    bgAudio.volume = 1;
+    renderToc();
+    showChapter(0, false);
+    // Musik dimulai setelah klik pada layar pembuka untuk memenuhi kebijakan autoplay browser.
+  </script>
+</body>
+</html>
